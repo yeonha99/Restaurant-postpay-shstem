@@ -1,16 +1,11 @@
 import cv2
 import numpy as np
-import socket
+import serial
 
+PORT = 'COM30'
+BaudRate = 9600
+ARD= serial.Serial(PORT,BaudRate)
 
-
-HOST = '127.0.0.1'    # The remote host
-
-PORT = 8888              # The same port as used by the server
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-s.connect((HOST, PORT))
 
 #가격리스트 DB open
 cost = open("cost.txt", 'r')
@@ -73,6 +68,8 @@ while True:
             label = str(classes[class_ids[i]])
             score = confidences[i]
             total+=int(costlist[class_ids[i]])
+            print(label)
+            print(total)
             # 경계상자와 클래스 정보 이미지에 입력
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 5)
             cv2.putText(frame, label, (x, y - 20), cv2.FONT_ITALIC, 0.5, 
@@ -81,10 +78,14 @@ while True:
     #결과 이미지 show        
     cv2.imshow("YOLOv3", frame)
     
-    #total이 0이 아닐때만 전송
     if total!=0:
-        s.sendall(str(total))
-    
+        Trans=str(total)
+        Trans= Trans.encode('utf-8')
+        ARD.write(Trans)
+        while True :
+            if ARD.readable() :
+                break
+            
     if cv2.waitKey(100) > 0:
         break
         
