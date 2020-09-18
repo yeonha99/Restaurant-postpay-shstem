@@ -28,21 +28,53 @@ void setup(){
   
   // Serial start
   Serial.begin(9600);
+  Serial.setTimeout(50);
+  lcd.setCursor(0,0);
+  lcd.write("HELLO");
+  delay(500);
+  lcd.clear();
 }
 
 void loop(){
-  
    while(Serial.available()){
     blank_1 = Serial.readString();
-    if(blank_1=="NULL"){
-      break;
+    delay(2000);
+    while(Serial.available()>0){
+      String a = Serial.readString();
     }
+    /*if(blank_1=="NULL"){
+      break;
+    }*/
     money = blank_1.toInt();
     lcd.clear();
     lcd.setCursor(4,0);
     lcd.print(blank_1);
     lcd.setCursor(9,0);
     lcd.write("won");
+    int blank_2 = millis();
+    while(true){
+      if(Serial.available()>0){
+        blank_2 = millis();
+        blank_1 = Serial.readString();
+        delay(2000);
+        while(Serial.available()>0){
+          String a = Serial.readString();
+        }
+        money += blank_1.toInt();
+        blank_1 = String(돈);
+        lcd.clear();
+        lcd.setCursor(4,0);
+        lcd.print(blank_1);
+        lcd.setCursor(9,0);
+        lcd.write("won");
+      }
+      int blank_3 = millis();
+      if(blank_3 - blank_2 >10000){
+        break;
+      }
+    }
+    lcd.setCursor(2,1);
+    lcd.write("Insert money");
     while(money>0){
        coin = digitalRead(coin_100);
        bill = pulseIn(machine,LOW,50000);
@@ -63,6 +95,8 @@ void loop(){
           lcd.print(blank);
           lcd.setCursor(9,0);
           lcd.write("won");
+          lcd.setCursor(2,1);
+          lcd.write("Insert money");
           delay(1000);
         }
        }
@@ -87,6 +121,8 @@ void loop(){
               lcd.print(blank);
               lcd.setCursor(9,0);
               lcd.write("won");
+              lcd.setCursor(2,1);
+              lcd.write("Insert money");
               break;
             }
             
@@ -108,6 +144,8 @@ void loop(){
               lcd.print(blank);
               lcd.setCursor(9,0);
               lcd.write("won");
+              lcd.setCursor(2,1);
+              lcd.write("Insert money");
               break;
             }
           }
@@ -117,7 +155,6 @@ void loop(){
     lcd.clear();
     lcd.setCursor(2,0);
     lcd.write("you paid all");
-    Serial.println("That's enough");
-    blank_1 = "NULL";
+    delay(1000);
    }
 }
